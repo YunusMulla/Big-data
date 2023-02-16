@@ -1,0 +1,488 @@
+51.Write an SQL query to report the name, population, and area of the big countries.
+Return the result table in any order
+
+      Ans-select `name`,`population`,`area` from `World` where `population`>25000000 or `area`>3000000 ;
+
+52.Write an SQL query to report the names of the customer that are not referred by the customer with id
+= 2.
+
+   Ans-select name
+from customer
+where referee_id != 2 or referee_id is NULL;
+
+53.Write an SQL query to report all customers who never order anything.
+Return the result table in any order
+
+   Ans-select name as customers from customers where id not in  (select customerid from orders);
+
+54.Write an SQL query to find the team size of each of the employees.
+Return result table in any order.
+
+    Ans-select employee_id ,count(team_id) over(partition by team_id) as team_size from employee; 
+
+55.Write an SQL query to find the countries where this company can invest.
+Return the result table in any order.
+
+   Ans-select c.name as country 
+from Person p 
+inner join Country c 
+on left (p.phone_number,3) = c.country_code 
+inner join (select caller_id as id, duration 
+            from Calls 
+            
+            union all 
+            
+            select callee_id as id, duration 
+            from Calls) phn 
+on p.id = phn.id 
+group by country 
+having avg(duration) > (select avg(duration) from Calls);
+
+56.rite an SQL query to report the device that is first logged in for each player.
+Return the result table in any order
+
+   Ans-select player_id ,min(event_date) as first_login from activity group by player_id  ;
+
+57.Write an SQL query to find the customer_number for the customer who has placed the largest
+number of orders.
+The test cases are generated so that exactly one customer will have placed more orders than any
+other customer.
+
+   Ans-select customer_number from orders group by customer_number order by count(order_number) desc limit 1;
+
+58.Write an SQL query to report all the consecutive available seats in the cinema.
+Return the result table ordered by seat_id in ascending order.
+The test cases are generated so that more than two seats are consecutively available.
+The query result format is in the following example
+
+   Ans-select c1.seat_id from cinema c1 ,cimen c2 where (( c1.seat_id =c2.seat_id+1) or (c1.seat_id =c2.seat_id-1)) and (c1.free=1) and (c2.free=1) group by   c1.seat_id ;
+
+59.Write an SQL query to report the names of all the salespersons who did not have any orders related to
+the company with the name "RED".
+Return the result table in any order.
+
+   Ans-select name from salesperson where sales_id not in (select sales_id from orders  where com_id = (select com_id from company where name='red')); 
+
+60.Write an SQL query to report for every three line segments whether they can form a triangle.
+Return the result table in any order.
+
+   Ans-select *, 
+    if(x+y>z and x+z>y and y+z>x, 'Yes', 'No') as triangle
+from triangle ;
+
+61.Write an SQL query to report the shortest distance between any two points from the Point table.
+The query result format is in the following example.
+
+   Ans-select mim(abs(p2.x-p1.x)) as shortest_distance from point p1 and point p2 where p1.x!=p2.x;
+
+62.Write a SQL query for a report that provides the pairs (actor_id, director_id) where the actor has
+cooperated with the director at least three times.
+Return the result table in any order
+
+   Ans-select actor_id ,director_id from actordirector group by actor_id , director_id having count(*)>=3;
+
+63.Write an SQL query that reports the product_name, year, and price for each sale_id in the Sales table.
+Return the resulting table in any order.
+
+   Ans-select s.product_name ,s.year,s.price from product p right join sales s on s.product_id=p.product_id ;
+
+64.Write an SQL query that reports the average experience years of all the employees for each project,
+rounded to 2 digits.
+
+   Ans-select p.project_id ,round(sum(e.experience_year)/count(p.project_id),2) from average_exp from employee e join project p on p.employee_id =e.employee_id group by p.project_id;
+
+65.Write an SQL query that reports the best seller by total sales price, If there is a tie, report them all.
+Return the result table in any order.
+
+   Ans-select distinct(seller_id) from sales group by seller_id having sum(price) =(select sum(price) as max_price from sales grop by seller_id order by max_price desc limit 1)
+;
+
+66.Write an SQL query that reports the buyers who have bought S8 but not iPhone. Note that S8 and
+iPhone are products present in the Product table.
+
+   Ans-select distinct(buyer_id) from sales s join product pon p.product_id=s.product_id where product_name='s8' and buyer_id not in(select buyer_id from sales s join product p on p.sales=s.sales where p.product_name='iphone');
+
+67.Write an SQL query to compute the moving average of how much the customer paid in a seven days
+window (i.e., current day + 6 days before). average_amount should be rounded to two decimal places.
+Return result table ordered by visited_on in ascending order.
+ 
+   Ans-with t_cte as  (select visited_on ,amount, sum(amount) over (order by visited_on range between interval '6' day preceding and current_row ) as amount from customers)
+                                   select visited_on ,amount round(amount/7 ,2) as avg_amount from t_cte as a join (select min(visited_on) as min_visited_on from t_cte) as b on datediff(visited_on ,min_visited_on)>=6;
+
+68.Write an SQL query to find the total score for each gender on each day.
+Return the result table ordered by gender and day in ascending order.
+
+   Ans-select distinct(gender) ,distinct(day) ,sum(score_points) over (partition by gender order by day) as total  from scores ;
+
+69.Write an SQL query to find the start and end number of continuous ranges in the table Logs.
+Return the result table ordered by start_id.
+
+   Ans-select min(log_id) as start_id and max(log_id) as end_id from (select log_id ,log_id-row_number() over(order by log_id) as rk from logs) t group by rk;
+
+70.Write an SQL query to find the number of times each student attended each exam.
+Return the result table ordered by student_id and subject_name.
+
+  Ans-select a.student_id, a.student_name, b.subject_name, count(c.subject_name) as attended_exams
+from Students as a
+join Subjects as b
+left join Examinations as c
+on a.student_id = c.student_id and b.subject_name = c.subject_name
+group by a.student_id, b.subject_name;
+
+71.Write an SQL query to find employee_id of all employees that directly or indirectly report their work to
+the head of the company.
+The indirect relation between managers will not exceed three managers as the company is small.
+Return the result table in any order.
+
+   Ans-
+select employee_id from employees where manager_id in(select employee_id from employees where manager_id in 
+(select employee_id from employee where manager_id=1));
+
+72.Write an SQL query to find for each month and country, the number of transactions and their total
+amount, the number of approved transactions and their total amount.
+Return the result table in any order.
+
+   Ans-select date_format(trans_date, '%y-%m') as month ,count(id) as total_count,sum(case when state='approved' then 1 else o end) as approved_count,sum(amount) as trans_total_amount ,sum(case when state='approved' then amount else 0 end) as approved_total_amount from transactions group by  date_format( trans_date,'%y-%m') ,country;
+
+73.Write an SQL query to find the average daily percentage of posts that got removed after being
+reported as spam, rounded to 2 decimal places.
+
+   Ans-select round(avg(daily_count),2) as average_daily_count from (select count(distinct b.post_id)/count(distinct a.post_id ) * 100 as daily_count from actions a left join removals b where extra='spam'  group by action_date); 
+
+74.Write an SQL query to report the fraction of players that logged in again on the day after the day they
+first logged in, rounded to 2 decimal places. In other words, you need to count the number of players
+that logged in for at least two consecutive days starting from their first login date, then divide that
+number by the total number of players.
+
+   Ans-WITH CTE AS (
+SELECT
+player_id, min(event_date) as event_start_date
+from
+Activity
+group by player_id )
+
+SELECT
+round((count(distinct c.player_id) / (select count(distinct player_id) from activity)),2)as fraction
+FROM
+CTE c
+JOIN Activity a
+on c.player_id = a.player_id
+and datediff(c.event_start_date, a.event_date) = -1;
+
+75.Write an SQL query to report the fraction of players that logged in again on the day after the day they
+first logged in, rounded to 2 decimal places. In other words, you need to count the number of players
+that logged in for at least two consecutive days starting from their first login date, then divide that
+number by the total number of players
+
+   Ans-WITH CTE AS (
+SELECT
+player_id, min(event_date) as event_start_date
+from
+Activity
+group by player_id )
+
+SELECT
+round((count(distinct c.player_id) / (select count(distinct player_id) from activity)),2)as fraction
+FROM
+CTE c
+JOIN Activity a
+on c.player_id = a.player_id
+and datediff(c.event_start_date, a.event_date) = -1
+
+76.Write an SQL query to find the salaries of the employees after applying taxes. Round the salary to the
+nearest integer.
+The tax rate is calculated for each company based on the following criteria:
+● 0% If the max salary of any employee in the company is less than $1000.
+● 24% If the max salary of any employee in the company is in the range [1000, 10000] inclusive.
+● 49% If the max salary of any employee in the company is greater than $10000.
+Return the result table in any order.
+The query result format is in the following example.
+
+   Ans-select company_id, employee_id, employee_name, round(salary - salary*tax, 0) as salary
+from
+(
+  select *,
+  case when max(salary) over(partition by company_id) < 1000 then 0
+       when max(salary) over(partition by company_id) between 1000
+       and 10000 then 0.24
+       else 0.49 end as tax
+  from Salaries
+) x
+
+77.Write an SQL query to evaluate the boolean expressions in Expressions table.
+Return the result table in any order
+
+   Ans-select e.left_operand, e.operator, e.right_operand,
+    case
+        when e.operator = '<' then if(l.value < r.value,'true','false')
+        when e.operator = '>' then if(l.value > r.value,'true','false')
+        else if(l.value = r.value,'true','false')
+    end as value
+from expressions e 
+left join variables l on e.left_operand = l.name 
+left join variables r on e.right_operand = r.name;
+
+78.A telecommunications company wants to invest in new countries. The company intends to invest in
+the countries where the average call duration of the calls in this country is strictly greater than the
+global average call duration.Write an SQL query to find the countries where this company can invest.
+Return the result table in any order
+
+   Ans-SELECT co.name AS country
+FROM person p
+INNER JOIN country co ON SUBSTRING(phone_number, 1, 3) = country_code
+INNER JOIN calls c ON (p.id = c.caller_id OR p.id = c.callee_id)
+GROUP BY co.name
+HAVING AVG(duration) > (SELECT AVG(duration) as avg_duration FROM calls);
+
+79.Write a query that prints a list of employee names (i.e.: the name attribute) from the Employee table in
+alphabetical order.
+Level - Easy
+Hint - Use ORDER BY
+Input Format
+The Employee table containing employee data for a company is described as follows:
+   
+ Ans-select name from employee order by name;
+
+80.Assume you are given the table below containing information on user transactions for particular
+products. Write a query to obtain the year-on-year growth rate for the total spend of each product for
+each year.
+Output the year (in ascending order) partitioned by product id, current year's spend, previous year's
+spend and year-on-year growth rate (percentage rounded to 2 decimal places).
+
+   Ans-
+
+81.Write a SQL query to find the number of prime and non-prime items that can be stored in the 500,000
+square feet warehouse. Output the item type and number of items to be stocked.
+
+   Ans-WITH CTE AS
+(SELECT 
+SUM(CASE WHEN ITEM_TYPE = 'not_prime' THEN 1 ELSE 0 END) N_PRIME,
+SUM(CASE WHEN ITEM_TYPE = 'prime_eligible' THEN 1 ELSE 0 END) PRIME,
+SUM(CASE WHEN ITEM_TYPE = 'not_prime' THEN SQUARE_FOOTAGE END) SUM_NP,
+SUM(CASE WHEN ITEM_TYPE = 'prime_eligible' THEN SQUARE_FOOTAGE END) SUM_P
+FROM INVENTORY)
+
+SELECT 
+'prime_eligible',
+TRUNC(500000/SUM_P,0)*PRIME PRIME_ITEMS
+FROM CTE
+UNION ALL
+SELECT 
+'not_prime',
+TRUNC((500000-TRUNC(500000/SUM_P,0)*SUM_P)/SUM_NP, 0)*N_PRIME NP_ITEMS
+FROM CTE;
+
+82.Write a query to
+obtain the active user retention in July 2022. Output the month (in numerical format 1, 2, 3) and the
+number of monthly active users (MAUs).
+
+   Ans-WITH CTE AS (SELECT *
+, MIN(event_date) OVER (PARTITION BY user_id) AS earliest_event
+, MAX(event_date) OVER (PARTITION BY user_id) AS latest_event
+FROM user_actions
+WHERE event_date BETWEEN '06/01/2022' AND '07/31/2022'
+AND event_type IN ('sign-in', 'like', 'comment')
+ORDER BY user_id, event_date)
+SELECT EXTRACT(MONTH FROM latest_event) AS month
+, COUNT(DISTINCT user_id) AS monthly_active_users
+FROM CTE 
+WHERE CASE WHEN (EXTRACT(MONTH FROM latest_event) - EXTRACT(MONTH FROM earliest_event) = 1) THEN 1 ELSE 0 END = 1
+GROUP BY 1;
+
+83.Write a query to report the median of searches made by a user. Round the median to one decimal
+point.
+
+   Ans-
+
+84.Write a query to update the Facebook advertiser's status using the daily_pay table. Advertiser is a
+two-column table containing the user id and their payment status based on the last payment and
+daily_pay table has current information about their payment. Only advertisers who paid will show up in
+this 
+
+   ANs-
+
+85.Write a query that calculates the total time that the fleet of servers was running. The output should be
+in units of full days.
+
+   ANs-
+
+86.
+Sometimes, payment transactions are repeated by accident; it could be due to user error, API failure or
+a retry error that causes a credit card to be charged twice.
+Using the transactions table, identify any payments made at the same merchant with the same credit
+card for the same amount within 10 minutes of each other. Count such repeated payments
+
+    Ans-
+
+87.Write a query to find the bad experience rate in the first 14 days for new users who signed up in June
+2022. Output the percentage of bad experience rounded to 2 decimal places.
+
+   ANs-
+
+88.Write an SQL query to find the total score for each gender on each day.
+Return the result table ordered by gender and day in ascending order.
+The query result format is in the following example.
+
+   Ans-SELECT
+    gender,
+    day,
+    SUM(score_points) OVER(PARTITION BY gender ORDER BY day) as total
+FROM Scores ;
+
+89.Write an SQL query to find the countries where this company can invest.
+Return the result table in any order.
+
+   Ans-select c.name as country 
+from Person p 
+inner join Country c 
+on left (p.phone_number,3) = c.country_code 
+inner join (select caller_id as id, duration 
+            from Calls 
+            
+            union all 
+            
+            select callee_id as id, duration 
+            from Calls) phn 
+on p.id = phn.id 
+group by country 
+having avg(duration) > (select avg(duration) from Calls);
+
+90.Write an SQL query to report the median of all the numbers in the database after decompressing the
+Numbers table. Round the median to one decimal point.
+The query result format is in the following example
+
+   Ans-select round(median(num) ,1) from frequency ;
+
+91.Write an SQL query to report the comparison result (higher/lower/same) of the average salary of
+employees in a department to the company's average salary.
+Return the result table in any order.
+
+   Ans-select department_salary.pay_month, department_id,
+    case
+        when department_avg>company_avg then 'higher'
+        when department_avg<company_avg then 'lower'
+        else 'same'
+    end as comparison
+from
+    (
+      select department_id, avg(amount) as department_avg, date_format(pay_date, '%Y-%m') as pay_month
+      from salary join employee on salary.employee_id = employee.employee_id
+      group by department_id, pay_month
+    ) as department_salary
+join
+    (
+      select avg(amount) as company_avg,  date_format(pay_date, '%Y-%m') as pay_month 
+        from salary 
+        group by date_format(pay_date, '%Y-%m')
+    ) as company_salary
+on department_salary.pay_month = company_salary.pay_month;
+
+92.Write an SQL query to report for each install date, the number of players that installed the game on
+that day, and the day one retention
+
+   Ans-select install_dt,count(*) as installs,round (sum(retained)/count(*) ,2) as day_1_retention
+(select player_id,min(event_date) as isntalls_dt , case (when date_add(event_date,interval 1 day) in (select event_date from activity join a.player_id -activity.player_id) then 1 else 0 end as retained from 
+activity a
+group by player_id , install_dt ;
+
+93.The winner in each group is the player who scored the maximum total points within the group. In the
+case of a tie, the lowest player_id wins.
+Write an SQL query to find the winner in each group.
+Return the result table in any order.
+
+   Ans-select group_id,player_id from 
+(select group_id,player_id,sum((
+    case when player_id = first_player then first_score
+         when player_id = second_player then second_score
+         end
+)) as totalScores
+from Players p,Matches m
+where p.player_id = m.first_player
+or p.player_id = m.second_player
+group by group_id,player_id
+order by group_id,totalScores desc,player_id) as temp
+group by group_id
+order by group_id,totalScores desc,player_id ;
+
+94.Write an SQL query to report the students (student_id, student_name) being quiet in all exams. Do not
+return the student who has never taken any exam.
+
+   Ans-
+select student_id,student_name from exam join student on exam.student_id=student.student_id group by student_id having sum(exam_id,score) in 
+(select exam_id ,min(score) from exam group by exam_id
+union 
+select exam_id,max(scores) from exam group by exam_id )=0
+order by student_id;
+
+95.A quiet student is the one who took at least one exam and did not score the high or the low score.
+Write an SQL query to report the students (student_id, student_name) being quiet in all exams. Do not
+return the student who has never taken any exam.
+
+   Ans-select student_id,student_name from exam join student on exam.student_id=student.student_id group by student_id having sum(exam_id,score) in 
+(select exam_id ,min(score) from exam group by exam_id
+union 
+select exam_id,max(scores) from exam group by exam_id )=0
+order by student_id;
+
+96.You're given two tables on Spotify users' streaming data. songs_history table contains the historical
+streaming data and songs_weekly table contains the current week's streaming data.
+Write a query to output the user id, song id, and cumulative count of song plays as of 4 August 2022
+sorted in descending order.
+
+   Ans-with cte as (select user_id, song_id ,song_plays from songs_history 
+union all 
+select user_id ,song_id,count(song_id) as songs_plays from songs_weekly
+where listen_time::date<='08-04-2022' group by user_id,songs_id )
+select user_id,songs_id,sum(songs_plays) from cte group by user_id,song_id order by songs_plays desc ;
+
+97.New TikTok users sign up with their emails, so each signup requires a text confirmation to activate the
+new user's account.
+Write a query to find the confirmation rate of users who confirmed their signups with text messages.
+Round the result to 2 decimal places.
+
+   Ans-WITH cte as
+(SELECT
+e.email_id,signup_action
+FROM emails e
+LEFT JOIN texts t
+ON e.email_id = t.email_id)
+SELECT ROUND((SELECT count(*) FROM cte WHERE signup_action='Confirmed')*1.0/(SELECT COUNT(DISTINCT(email_id)) FROM cte),2) AS confirm_rate
+
+98.The table below contains information about tweets over a given period of time. Calculate the 3-day
+rolling average of tweets published by each user for each date that a tweet was posted. Output the
+user id, tweet date, and rolling averages rounded to 2 decimal places.
+Hint- Use Count and group by
+
+   Ans-SELECT user_id, 
+       tweet_date,
+       ROUND(AVG(COUNT(tweet_id)) OVER(PARTITION BY user_id ORDER BY COUNT(tweet_id) desc,tweet_date ROWS BETWEEN 2 preceding and current row),2)AS three_day_avg
+FROM tweets
+GROUP BY user_id,tweet_date
+ORDER BY user_id, tweet_date;
+
+99.Assume you are given the tables below containing information on Snapchat users, their ages, and
+their time spent sending and opening snaps. Write a query to obtain a breakdown of the time spent
+sending vs. opening snaps (as a percentage of total time spent on these activities) for each age
+group.
+
+   Ans-with cte as
+    (
+      SELECT age_bucket, a.user_id,a.activity_type,a.time_spent
+      FROM activities a
+      JOIN age_breakdown ab ON a.user_id = ab.user_id
+      WHERE activity_type IN ('open', 'send')
+    )
+SELECT age_bucket, 
+ROUND((SUM(CASE when activity_type = 'send' then time_spent ELSE 0 END) / SUM(time_spent)) * 100.0, 2) send_perc,
+ROUND((SUM(CASE when activity_type = 'open' then time_spent ELSE 0 END) / SUM(time_spent)) * 100.0, 2) open_perc
+FROM cte
+GROUP BY age_bucket,user_id;
+
+100.The LinkedIn Creator team is looking for power creators who use their personal profile as a company
+or influencer page. This means that if someone's Linkedin page has more followers than all the
+companies they work for, we can safely assume that person is a Power Creator. Keep in mind that if a
+person works at multiple companies, we should take into account the company with the most
+followers.
+
+   Ans-select p.profile_id from personal_profile join employee_company ec on e,profile_id=ec.personal_profile_id join company c on ccompany_id=ec.companu_id where (seelct max(followers)  >(select max(followers) from company_pages ) from profile);
+
