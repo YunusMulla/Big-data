@@ -1,0 +1,648 @@
+101.Write an SQL query to show the second most recent activity of each user.
+If the user only has one activity, return that one. A user cannot perform more than one activity at the
+same time.
+Return the result table in any order
+
+  Ans-
+select username,activity,startdate,enddate from (select username,activity,startdate,endate 
+rank() over(partition by username order by enddate desc)  r 
+count(activity) over(partition by username)  c
+from useractivity)  x 
+where r=2 and c=1;
+
+102.Write an SQL query to show the second most recent activity of each user.
+If the user only has one activity, return that one. A user cannot perform more than one activity at the
+same time.
+Return the result table in any order
+
+   Ans- select username,activity,startdate,enddate from (select username,activity,startdate,endate 
+rank() over(partition by username order by enddate desc)  r 
+count(activity) over(partition by username)  c
+from useractivity)  x 
+where r=2 and c=1;
+
+103.Query the Name of any student in STUDENTS who scored higher than 75 Marks. Order your output by
+the last three characters of each name. If two or more students both have names ending in the same
+last three characters (i.e.: Bobby, Robby, etc.), secondary sort them by ascending ID.
+
+   ans-select name from students where marks >75;
+
+104.Write a query that prints a list of employee names (i.e.: the name attribute) for employees in
+Employee having a salary greater than $2000 per month who have been employees for less than 10
+months. Sort your result by ascending employee_id.
+
+   Ans-selelct name from employee where salary>20000 and month<10 order by employee_id;
+
+105.Write a query identifying the type of each record in the TRIANGLES table using its three side lengths.
+Output one of the following statements for each record in the table:
+● Equilateral: It's a triangle with sides of equal length.
+● Isosceles: It's a triangle with sides of equal length.
+● Scalene: It's a triangle with sides of differing lengths.
+● Not A Triangle: The given values of A, B, and C don't form a triangle.
+
+   Ans-SELECT CASE
+WHEN A + B <= C OR A + C <= B OR B + C <= A THEN 'Not A Triangle'
+WHEN A = B AND B = C THEN 'Equilateral'
+WHEN A = B OR B = C OR A = C THEN 'Isosceles'
+ELSE 'Scalene'
+END
+FROM TRIANGLES;
+
+106.Samantha was tasked with calculating the average monthly salaries for all employees in the
+EMPLOYEES table, but did not realise her keyboard's 0 key was broken until after completing the
+calculation. She wants your help finding the difference between her miscalculation (using salaries
+with any zeros removed), and the actual average salary.
+Write a query calculating the amount of error (i.e.: actual - miscalculated average monthly salaries),
+and round it up to the next integer.
+
+   Ans-selelct ceil(avg(salary)-avg(replace(salary,'0',' ' ))  from employee;
+
+107.We define an employee's total earnings to be their monthly salary * months worked, and the
+maximum total earnings to be the maximum total earnings for any employee in the Employee table.
+Write a query to find the maximum total earnings for all employees as well as the total number of
+employees who have maximum total earnings. Then print these values as 2 space-separated
+integers.
+Level - Easy
+Hint - Use Aggregation functions
+Input Format
+The Employee table containing employee data for a company is described as follows
+
+   Ans-selelct (salary*months) as earnings from employee group by earnings order by aernings desc limit 1;
+
+108.Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by
+the first letter of each profession as a parenthetical (i.e.: enclosed in parentheses). For
+example: AnActorName(A), ADoctorName(D), AProfessorName(P), and ASingerName(S).
+Query the number of occurrences of each occupation in OCCUPATIONS. Sort the occurrences in
+ascending order, and output them in the following format:
+Level - Medium
+There are a total of [occupation_count] [occupation]s.
+2. where [occupation_count] is the number of occurrences of an occupation in OCCUPATIONS and
+[occupation] is the lowercase occupation name. If more than one Occupation has the same
+[occupation_count], they should be ordered alphabetically.
+Note: There will be at least two entries in the table for each type of occupation.
+Input Format
+The OCCUPATIONS table is described as follows:
+
+   Ans-selelct concat(name '(',left(occupation,1')' ) from occupations order by name
+select "there are total of "|| count(occupation) ,occupation order by occupation ;
+
+109.Pivot the Occupation column in OCCUPATIONS so that each Name is sorted alphabetically and
+displayed underneath its corresponding Occupation. The output column headers should be Doctor,
+Professor, Singer, and Actor, respectively.
+Note: Print NULL when there are no more names corres 
+
+   Ans-select occupation from( select row_number() over(partition by occupation order by name ) as rn name ,occupation from occupations )
+pivot
+(max(name) for occupation in ('doctor','professor','singer','actor') order by  rn;
+
+110.Write a query to find the node type of Binary Tree ordered by the value of the node. Output one of the
+following for each node:
+● Root: If node is root node.
+● Leaf: If node is leaf node.
+● Inner: If node is neither root nor leaf node.
+
+   Ans-select n  ,case when p is null then 'root'
+when n in(select p in bts) then 'inner'
+else 'leaf' end from bst order by n;
+
+111.Amber's conglomerate corporation just acquired some new companies. Each of the companies
+follows this hierarchy:
+Given the table schemas below, write a query to print the company_code, founder name, total number
+of lead managers, total number of senior managers, total number of managers, and total number of
+employees. Order your output by ascending company_code.
+Level - Medium
+
+   Ans-select company_code ,founder, count(lead_manager_code),count(senior_manager_code),count(manager_code),count(employee) from companyc left join employee e on c.company_code=c.company_code group by company_code ,founde order by company_code ;
+
+112.Write a query to print all prime numbers less than or equal to 1000. Print your result on a single line,
+and use the ampersand () character as your separator (instead of a space)
+
+   Ans-
+
+113.P(R) represents a pattern drawn by Julia in R rows. The following pattern represents P(5):
+*
+* *
+* * *
+* * * *
+* * * * *
+Write a query to print the pattern P(20).
+
+   Ans-DECALRE @ME=1
+           WHILE @ME<=5
+           BEGIN
+           PRINT REPLICATE ("* " ,@ME)
+           SET @ME=@ME+1
+           END
+
+114. represents a pattern drawn by Julia in R rows. The following pattern represents P(5):
+* * * * *
+* * * *
+* * *
+* *
+*
+Write a query to print the pattern P(20).
+Level - Easy
+Hint - Use SYS_CONNECT_BY_PATH(NULL, '* ') FROM DUAL
+
+   Ans-DECALRE @ME=5
+           WHILE @ME<=1
+           BEGIN
+           PRINT REPLICATE ("* " ,@ME)
+           SET @ME=@ME-1
+           END
+
+115.Two pairs (X1, Y1) and (X2, Y2) are said to be symmetric pairs if X1 = Y2 and X2 = Y1.
+Write a query to output all such symmetric pairs in ascending order by the value of X. List the rows
+such that X1 ≤ Y1.
+
+   Ans-selelct x as x1 ,y as y1  from functions f join function ff  on f.x=ff.y where x1=y2 and x2=y1 group by x,y having count(x)>1 or x<y order by x ;
+
+116.Query the Name of any student in STUDENTS who scored higher than 75 Marks. Order your output by
+the last three characters of each name. If two or more students both have names ending in the same
+last three characters (i.e.: Bobby, Robby, etc.), secondary sort them by ascending ID.
+
+   Ans-select name from students where marks>75;
+
+117.Write a query that prints a list of employee names (i.e.: the name attribute) from the Employee table
+in alphabetical order.
+
+   Ans-select name from employee order by name;
+
+118.Write a query that prints a list of employee names (i.e.: the name attribute) for employees in
+Employee having a salary greater than $2000 per month who have been employees for less than 10
+months. Sort your result by ascending employee_id.
+
+   Ans-select name from employee where salary >2000 amd months <10;
+
+119Write a query identifying the type of each record in the TRIANGLES table using its three side
+lengths. Output one of the following statements for each record in the table:
+● Equilateral: It's a triangle with sides of equal length.
+● Isosceles: It's a triangle with sides of equal length.
+● Scalene: It's a triangle with sides of differing lengths.
+● Not A Triangle: The given values of A, B, and C don't form a triangle.
+
+   Ans-select case 
+when A+B =C and B+C=A and A+C=bthen 'not a triangle'
+ when A=B AND B=C THEN 'IS' 
+        WHEN A=B AND B=C AND A=C THEN 'EQ'
+        ELSE 'SC' END AS RESULT
+FROM triangles;
+
+120.Assume you are given the table below containing information on user transactions for
+particular products. Write a query to obtain the year-on-year growth rate for the total spend of each
+product for each year
+
+   Ans-with cte  as (
+select extract(year from transaction_date) as year, product_id, spend as curr_year_spend,
+lag(spend,1) over (PARTITION BY product_id) as prev_year_spend from user_transactions
+)
+select cte.*, round((curr_year_spend/prev_year_spend -1) * 100,2) as yoy_rate from cte
+
+121.Amazon wants to maximise the number of items it can stock in a 500,000 square feet
+warehouse. It wants to stock as many prime items as possible, and afterwards use the remaining
+square footage to stock the most number of non-prime items.
+Write a SQL query to find the number of prime and non-prime items that can be stored in the 500,000
+square feet warehouse. Output the item type and number of items to be stocked.
+
+   Ans-WITH CTE AS
+(SELECT 
+SUM(CASE WHEN ITEM_TYPE = 'not_prime' THEN 1 ELSE 0 END) N_PRIME,
+SUM(CASE WHEN ITEM_TYPE = 'prime_eligible' THEN 1 ELSE 0 END) PRIME,
+SUM(CASE WHEN ITEM_TYPE = 'not_prime' THEN SQUARE_FOOTAGE END) SUM_NP,
+SUM(CASE WHEN ITEM_TYPE = 'prime_eligible' THEN SQUARE_FOOTAGE END) SUM_P
+FROM INVENTORY)
+
+SELECT 
+'prime_eligible',
+TRUNC(500000/SUM_P,0)*PRIME PRIME_ITEMS
+FROM CTE
+UNION ALL
+SELECT 
+'not_prime',
+TRUNC((500000-TRUNC(500000/SUM_P,0)*SUM_P)/SUM_NP, 0)*N_PRIME NP_ITEMS
+FROM CTE;
+
+122.Assume you have the table below containing information on Facebook user actions. Write a query to
+obtain the active user retention in July 2022. Output the month (in numerical format 1, 2, 3) and the
+number of monthly active users 
+
+   Ans-WITH cte AS 
+(SELECT user_id, event_type, 
+DATE_PART('Month',event_date) AS months
+FROM user_actions)
+
+SELECT months, 
+COUNT( DISTINCT user_id) AS montly_active_users
+FROM cte
+WHERE months = 7  AND 
+user_id IN (SELECT user_id FROM cte WHERE months = 6)
+GROUP BY months;
+
+123.Write a query to update the Facebook advertiser's status using the daily_pay table. Advertiser is
+a two-column table containing the user id and their payment status based on the last payment and
+daily_pay table has current information about their payment. Only advertisers who paid will show up in
+this table.
+
+   Ans-WITH payment AS (
+SELECT COALESCE(daily_pay.user_id, advertiser.user_id) as user_id, advertiser.status AS og_status, daily_pay.paid
+FROM daily_pay
+FULL JOIN advertiser ON advertiser.user_id = daily_pay.user_id
+)
+
+SELECT user_id,
+  CASE WHEN PAID IS NULL then 'CHURN' 
+       WHEN og_status = 'NEW' AND PAID > 0 THEN 'EXISTING'
+       WHEN og_status = 'EXISTING' AND PAID > 0 THEN 'EXISTING'
+       WHEN og_status = 'CHURN' AND PAID > 0 THEN 'RESURRECT'
+       WHEN og_status = 'RESURRECT' AND PAID > 0 THEN 'EXISTING'
+       WHEN og_status IS NULL THEN 'NEW'
+  END AS new_status
+FROM payment
+ORDER BY USER_ID;
+
+124.Amazon Web Services (AWS) is powered by fleets of servers. Senior management has
+requested data-driven solutions to optimise server usage.
+Write a query that calculates the total time that the fleet of servers was running. The output should be
+in units of full days.
+
+   Ans-with ct as 
+( select server_id,status_time ,session_status ,
+lead(status_time) over(order by server_id ,ststus_time) as end time from server_utilization)
+select extract(day from justify_hours(sum(end_time-status_time))) as total_uptime_days
+from cte where session_status ='start';
+
+125.Sometimes, payment transactions are repeated by accident; it could be due to user error, API
+failure or a retry error that causes a credit card to be charged twice.
+Using the transactions table, identify any payments made at the same merchant with the same credit
+card for the same amount within 10 minutes of each other. Count such repeated payments.
+
+   Ans-with cte as (select *, lead(transaction_timestamp) over (partition by merchant_id ,credit_card_id,amount  order by transaction_timestamp) as end_time from transactions )
+select count(*) as payment_count from cte 
+where end_time-transaction_timestamp <= '10 minutes' ;
+
+126.DoorDash's Growth Team is trying to make sure new users (those who are making orders in
+their first 14 days) have a great experience on all their orders in their 2 weeks on the platform.
+Unfortunately, many deliveries are being messed up because:
+● the orders are being completed incorrectly (missing items, wrong order, etc.)
+● the orders aren't being received (wrong address, wrong drop off spot)
+● the orders are being delivered late (the actual delivery time is 30 minutes later than when the
+order was placed). Note that the estimated_delivery_timestamp is automatically set to 30
+minutes after the order_timestamp.
+
+   Ans-
+
+127.Write an SQL query to find the total score for each gender on each day.
+Return the result table ordered by gender and day in ascending order.
+The query result format is in the following example.
+
+   Ans- select gender ,sum(score_points) over(partition by gender) as total  ,day from scores group by day order by gender ;
+
+128.A telecommunications company wants to invest in new countries. The company intends to invest in
+the countries where the average call duration of the calls in this country is strictly greater than the
+global average call duration.
+Write an SQL query to find the countries where this company can invest.
+Return the result table in any order.
+
+   Ans-SELECT co.name AS country
+FROM person p
+INNER JOIN country co ON SUBSTRING(phone_number, 1, 3) = country_code
+INNER JOIN calls c ON (p.id = c.caller_id OR p.id = c.callee_id)
+GROUP BY co.name
+HAVING AVG(duration) > (SELECT AVG(duration) as avg_duration FROM calls)
+ORDER BY NULL;
+
+129.The median is the value separating the higher half from the lower half of a data sample.
+Write an SQL query to report the median of all the numbers in the database after decompressing the
+Numbers table. Round the median to one decimal point.
+
+   Ans-select round(median(num) ,1) from numbers;
+
+130.Write an SQL query to report the comparison result (higher/lower/same) of the average salary of
+employees in a department to the company's average salary.
+Return the result table in any order.
+
+   Ans-select department_salary.pay_month, department_id,
+    case
+        when department_avg>company_avg then 'higher'
+        when department_avg<company_avg then 'lower'
+        else 'same'
+    end as comparison
+from
+    (
+      select department_id, avg(amount) as department_avg, date_format(pay_date, '%Y-%m') as pay_month
+      from salary join employee on salary.employee_id = employee.employee_id
+      group by department_id, pay_month
+    ) as department_salary
+join
+    (
+      select avg(amount) as company_avg,  date_format(pay_date, '%Y-%m') as pay_month 
+        from salary 
+        group by date_format(pay_date, '%Y-%m')
+    ) as company_salary
+on department_salary.pay_month = company_salary.pay_month;
+
+131.The install date of a player is the first login day of that player.
+We define day one retention of some date x to be the number of players whose install date is x and
+they logged back in on the day right after x, divided by the number of players whose install date is x,
+rounded to 2 decimal places.
+Write an SQL query to report for each install date, the number of players that installed the game on
+that day, and the day one retention.
+Return the result table in any orde
+
+   Ans-select install_dt,count(*) as installs,round (sum(retained)/count(*) ,2) as day_1_retention
+(select player_id,min(event_date) as isntalls_dt ,
+ case (when date_add(event_date,interval 1 day) in (select event_date from activity join a.player_id = activity.player_id) then 1 else 0 end as retained from 
+activity a
+group by player_id , install_dt ;
+
+132.The winner in each group is the player who scored the maximum total points within the group. In the
+case of a tie, the lowest player_id wins.
+Write an SQL query to find the winner in each group.
+Return the result table in any order.
+The query result format is in the following example.
+
+   Ans-select group_id,player_id from 
+(select group_id,player_id,sum((
+    case when player_id = first_player then first_score
+         when player_id = second_player then second_score
+         end
+)) as totalScores
+from Players p,Matches m
+where p.player_id = m.first_player
+or p.player_id = m.second_player
+group by group_id,player_id
+order by group_id,totalScores desc,player_id) as temp
+group by group_id
+order by group_id,totalScores desc,player_id ;
+
+133.Write an SQL query to report the students (student_id, student_name) being quiet in all exams. Do not
+return the student who has never taken any exam.
+Return the result table ordered by student_id.
+
+   Ans-select student_id,student_name from exam join student on exam.student_id=student.student_id group by student_id having sum(exam_id,score) in 
+(select exam_id ,min(score) from exam group by exam_id
+union 
+select exam_id,max(scores) from exam group by exam_id )=0
+order by student_id;
+
+134.A quiet student is the one who took at least one exam and did not score the high or the low score.
+Write an SQL query to report the students (student_id, student_name) being quiet in all exams. Do not
+return the student who has never taken any exam.
+Return the result table ordered by student_id.
+
+   Ans-student_id,student_name from exam join student on exam.student_id=student.student_id group by student_id having sum(exam_id,score) in 
+(select exam_id ,min(score) from exam group by exam_id
+union 
+select exam_id,max(scores) from exam group by exam_id )=0
+order by student_id;
+
+135.Write an SQL query to show the second most recent activity of each user.
+If the user only has one activity, return that one. A user cannot perform more than one activity at the
+same time.
+Return the result table in any order.
+
+   Ans-select username,activity,startdate,enddate from (select username,activity,startdate,endate 
+rank() over(partition by username order by enddate desc)  r 
+count(activity) over(partition by username)  c
+from useractivity)  x 
+where r=2 and c=1;
+
+136.Write an SQL query to show the second most recent activity of each user.
+If the user only has one activity, return that one. A user cannot perform more than one activity at the
+same time.
+
+   Ans- selelct * from (selelct * rank() over(partition by user_name order by end_date)  r
+count(activity) over(partition by user_name) c
+from user_activity) x
+where r=2 and c=1;
+
+137.Samantha was tasked with calculating the average monthly salaries for all employees in the
+EMPLOYEES table, but did not realise her keyboard's 0 key was broken until after completing the
+calculation. She wants your help finding the difference between her miscalculation (using salaries
+with any zeros removed), and the actual average salary
+
+   Ans-selelct ceil(avg(salary)-avg(replace(salary,'0',' ' ))  from employee;
+
+138.We define an employee's total earnings to be their monthly salary * months worked, and the
+maximum total earnings to be the maximum total earnings for any employee in the Employee table.
+Write a query to find the maximum total earnings for all employees as well as the total number of
+employees who have maximum total earnings. Then print these values as 2 space-separated
+integers.
+Level - Easy
+Hint - Use Aggregation functions
+
+   Ans- selelct (months*salary) as sal,months  from employee where avg(salary) < salary;
+
+139. Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by
+the first letter of each profession as a parenthetical (i.e.: enclosed in parentheses). For
+example: AnActorName(A), ADoctorName(D), AProfessorName(P), and ASingerName(S).
+Query the number of occurrences of each occupation in OCCUPATIONS. Sort the occurrences in
+ascending order, and output them in the following format:
+
+   Ans-selelct concat(name '(',left(occupation,1')' ) from occupations order by name
+select "there are total of "|| count(occupation) ,occupation order by occupation ;
+
+140.Pivot the Occupation column in OCCUPATIONS so that each Name is sorted alphabetically and
+displayed underneath its corresponding Occupation. The output column headers should be Doctor,
+Professor, Singer, and Actor, respectively.
+
+  Ans--selectdoctor,professor,singer,actor 
+ from( select row_number() over(partition by occupation order by name ) as rn name ,occupation from occupations )
+pivot
+(max(name) for occupation in ('doctor','professor','singer','actor') order by  rn;
+
+141.Write a query to find the node type of Binary Tree ordered by the value of the node. Output one of the
+following for each node:
+● Root: If node is root node.
+● Leaf: If node is leaf node.
+
+
+   Ans-select n, case when p=null then 'root'
+                     when n in (selelct p in bts ) then 'inner'
+                     else 'leaf'  end from bts order by n;
+
+142.follows this hierarchy:
+Given the table schemas below, write a query to print the company_code, founder name, total number
+of lead managers, total number of senior managers, total number of managers, and total number of
+employees. Order your output by ascending company_code.
+Level - Medium
+
+   Ans-select company_code ,founder, count(lead_manager_code),count(senior_manager_code),count(manager_code),count(employee) from companyc left join employee e on c.company_code=c.company_code group by company_code ,founde order by company_code ;
+
+143.Two pairs (X1, Y1) and (X2, Y2) are said to be symmetric pairs if X1 = Y2 and X2 = Y1.
+Write a query to output all such symmetric pairs in ascending order by the value of X. List the rows
+
+   Ans-select f.x,f.y from function f join function f1 on f.x=f1.y and f1.x=f.y group by f.x,f.y  having count(f.x) >1 or f.x<f.y  order by f.x ;
+
+144.Write a query to output the names of those students whose best friends got offered a higher salary
+than them. Names must be ordered by the salary amount offered to the best friends. It is guaranteed
+that no two students get the same salary offer.
+
+   Ans-select S1.Name
+from @Students s1 
+inner join @Packages p1 on s1.Id = p1.Id
+inner join @Friends f on s1.id = f.Id
+inner join @Students s2 on f.Friend_Id = s2.Id
+inner join @Packages p2 on s2.id = p2.Id
+where p1.Salary < p2.Salary
+order by p2.Salary 
+
+145.Julia just finished conducting a coding contest, and she needs your help assembling the leaderboard!
+Write a query to print the respective hacker_id and name of hackers who achieved full scores for more
+than one challenge. Order your output in descending order by the total number of challenges in which
+the hacker earned a full score. If more than one hacker received full scores in the same number of
+challenges, then sort them by ascending hacker_id.
+
+   Ans-SELECT S.hacker_id, name
+FROM SUBMISSIONS AS S
+JOIN HACKERS AS H ON S.hacker_id = H.hacker_id
+JOIN Challenges AS C ON S.challenge_id = C.challenge_id
+JOIN Difficulty AS D ON C.difficulty_level = D.difficulty_level
+WHERE S.score = D.score
+GROUP BY name, S.hacker_id
+HAVING count(S.challenge_id) > 1
+ORDER BY count(S.challenge_id) DESC, S.hacker_id
+
+146.You are given a table, Projects, containing three columns: Task_ID, Start_Date and End_Date. It is
+guaranteed that the difference between the End_Date and the Start_Date is equal to 1 day for each
+row in the table,If the End_Date of the tasks are consecutive, then they are part of the same project. Samantha is
+interested in finding the total number of different projects completed.
+Write a query to output the start and end dates of projects listed by the number of days it took to
+complete the project in ascending order. If there is more than one project that have the same number
+of completion days, then order by the start date of the project.
+
+   Ans-select start_date ,end_date from (select start_date from projects where start_date not in (selelct end_date from project)) a
+(select ebd_date from project where end_date not in (selelct start_date from project )) b
+ where start_date < end_date ,
+group by start_date order by datediff(end_date ,start_date ) start_date;
+
+147.In an effort to identify high-value customers, Amazon asked for your help to obtain data about users
+who go on shopping sprees. A shopping spree occurs when a user makes purchases on 3 or more
+consecutive days.
+List the user IDs who have gone on at least 1 shopping spree in ascending order
+
+   Ans-select user_id ,dense_rank() over( order by transaction_date) as rn where rn>2 from transactions;
+
+148.You are given a table of PayPal payments showing the payer, the recipient, and the amount paid. A
+two-way unique relationship is established when two people send money back and forth. Write a
+query to find the number of two-way unique relationships in this data.
+
+   Ans-
+
+149.Assume you are given the table below on user transactions. Write a query to obtain the list of
+customers whose first transaction was valued at $50 or more. Output the number of users.
+Clarification:
+● Use the transaction_date field to determine which transaction should be labeled as the first
+for each user.
+● Use a specific function (we can't give too much away!) to account for scenarios where a user
+had multiple transactions on the same day, and one of those was the first.
+
+   Ans-sellect count(distinct(user_id)) , lag() over (partition by spend) as lg 
+where lg>50 order by transaction_date;
+
+150.Assume you are given the table below containing measurement values obtained from a sensor over
+several days. Measurements are taken several times within a given day.
+Write a query to obtain the sum of the odd-numbered and even-numbered measurements on a
+particular day, in two different columns.
+Note that the 1st, 3rd, 5th measurements within a day are considered odd-numbered measurements
+and the 2nd, 4th, 6th measurements are even-numbered measurements
+
+   Ans-with cte as (select measurement_time::date measurement_day, measurement_value, 
+row_number() over(partition by measurement_time::date order by measurement_time) rownum
+from measurements)
+select measurement_day,
+sum(case when rownum % 2 = 1 then measurement_value else 0 end) odd_sum,
+sum(case when rownum % 2 = 0 then measurement_value else 0 end) even_sum 
+from cte 
+group by measurement_day
+order by measurement_day 
+
+151.In an effort to identify high-value customers, Amazon asked for your help to obtain data about users
+who go on shopping sprees. A shopping spree occurs when a user makes purchases on 3 or more
+consecutive days.
+List the user IDs who have gone on at least 1 shopping spree in ascending order.
+
+   Ans-with cte as ( select user_id ,transaction_date :: date transaction_day ,row_number() over(partition by transaction_day order by transaction_day) as rn from transactions )
+selelct User_id from cte where rn>=3 group by user_id ;
+
+152.The Airbnb Booking Recommendations team is trying to understand the "substitutability" of two
+rentals and whether one rental is a good substitute for another. They want you to write a query to find
+the unique combination of two Airbnb rentals with the same exact amenities offered.
+Output the count of the unique combination of Airbnb rentals.
+
+   Ans-
+
+153.Google marketing managers are analysing the performance of various advertising accounts over the
+last month. They need your help to gather the relevant data.
+Write a query to calculate the return on ad spend (ROAS) for each advertiser across all ad campaigns.
+Round your answer to 2 decimal places, and order your output by the advertiser_id.
+
+   Ans-selelct advertisement_id ,(revenue * spend ) as ROAS from ad_campaign a join ad_campaign ad on a.advertisement_id =ad.campaign_id order by ROAS;
+
+154.Your team at Accenture is helping a Fortune 500 client revamp their compensation and benefits
+program. The first step in this analysis is to manually review employees who are potentially overpaid
+or underpaid.
+An employee is considered to be potentially overpaid if they earn more than 2 times the average salary
+for people with the same title. Similarly, an employee might be underpaid if they earn less than half of
+the average for their title. We'll refer to employees who are both underpaid and overpaid as
+compensation outliers for the purposes of this problem.
+Write a query that shows the following data for each compensation outlier: employee ID, salary, and
+whether they are potentially overpaid or potentially underpaid (refer to Example Output below).
+
+   Ans-select t.employee_id,t.salary case when t.salalry>t.overpaid then 'overpaid'
+when t.salary <t.underpaid then 'underpaid' end as status
+from
+(selelct employee-Id,salary,2*avg(salary) over(partition by title) as overpaid ,
+0.5*avg(salary) over(partition by title) as underpaid from emplyee_pay) t order by t.employee_id;
+
+155.You are given a table of PayPal payments showing the payer, the recipient, and the amount paid. A
+two-way unique relationship is established when two people send money back and forth. Write a
+query to find the number of two-way unique relationships in this data.
+
+   Ans-select count(*) as unique_relations from
+(select count(*) as relations from
+(select greatest(payer_id,recipient_id) as person 1,
+least(payer_id,recipient_id ) as person2 from(select distinct(*) from payments) t
+)t1
+group by person 1 ,person2 ) t2 
+where relation_count=2;
+
+156.Assume you are given the table below containing information on user purchases. Write a query to
+obtain the number of users who purchased the same product on two or more different days. Output
+the number of unique users.
+PS. On 26 Oct 2022, we expanded the purchases data set, thus the official output may vary from before.
+Hint- Count the distinct number of dates formatted into the DATE format in the COUNT(DISTINCT )
+
+   Ans-select distinct(count(t.user_id)) as repeated_purchase from(
+select user_id,purchase_id,count(*)  as c from purchase 
+group by user_id,purchase_id
+having c >1;
+) t;
+
+157.Say you have access to all the transactions for a given merchant account. Write a query to print the
+cumulative balance of the merchant account at the end of each day, with the total balance reset back
+to zero at the end of the month. Output the transaction date and cumulative balance.
+
+   Ans-select distinct date_format(transaction_date,'%m-%d-%y 12:00:00' ) ,round(sum(t.amount) over (partition by month(transaction_date)  order by transaction_date),2 ) as balance from
+(select case when type=deposit then amount else -amount as amount from transactions 
+) t;
+
+158.Assume you are given the table below containing information on Amazon customers and their spend
+on products belonging to various categories. Identify the top two highest-grossing products within
+each category in 2022. Output the category, product, and total spend.
+
+   Ans-select t.category,t.product,t.total_spend from
+(
+(select category,product,round(sum(spend),2) as total_spend ,dense_rank() over(partition by category order by sum(spend) ) as r
+from product_spend group by category,product
+) t where r<=2;
+
+
+159.Facebook is analysing its user signup data for June 2022. Write a query to generate the churn rate by
+week in June 2022. Output the week number (1, 2, 3, 4, ...) and the corresponding churn rate rounded
+to 2 decimal places.
+For example, week number 1 represents the dates from 30 May to 5 Jun, and week 2 is from 6 Jun to
+12 Jun.
+
+   Ans-
+
